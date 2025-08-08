@@ -1,0 +1,570 @@
+{
+ "Resources": {
+  "MosquesTableA920B505": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "Mosques"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosquesTable/Resource"
+   }
+  },
+  "ApiLambdaServiceRole1CC7D0F3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/ApiLambda/ServiceRole/Resource"
+   }
+  },
+  "ApiLambdaServiceRoleDefaultPolicyF1B57697": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MosquesTableA920B505",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiLambdaServiceRoleDefaultPolicyF1B57697",
+    "Roles": [
+     {
+      "Ref": "ApiLambdaServiceRole1CC7D0F3"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/ApiLambda/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "ApiLambda91D2282D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-590184117261-eu-north-1",
+     "S3Key": "faf18a9e45efb02f4748836934bba1ce7d1ead764d710e8ac653d5810b4957e2.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "DYNAMO_TABLE": {
+       "Ref": "MosquesTableA920B505"
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "ApiLambdaServiceRole1CC7D0F3",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 15
+   },
+   "DependsOn": [
+    "ApiLambdaServiceRoleDefaultPolicyF1B57697",
+    "ApiLambdaServiceRole1CC7D0F3"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/ApiLambda/Resource",
+    "aws:asset:path": "asset.faf18a9e45efb02f4748836934bba1ce7d1ead764d710e8ac653d5810b4957e2",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "MosqueApi38EAD784": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "MosqueApi"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/Resource"
+   }
+  },
+  "MosqueApiCloudWatchRole20FC03FF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/CloudWatchRole/Resource"
+   }
+  },
+  "MosqueApiAccountB92643A2": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "MosqueApiCloudWatchRole20FC03FF",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "MosqueApi38EAD784"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/Account"
+   }
+  },
+  "MosqueApiDeployment507D0882bb254bc663cabc45c9f1ad65a36766db": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "MosqueApi38EAD784"
+    }
+   },
+   "DependsOn": [
+    "MosqueApiproxyANY6B5B8B58",
+    "MosqueApiproxyA334B841",
+    "MosqueApiANY55E992EF"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/Deployment/Resource",
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "MosqueApiDeploymentStageprod24DEAC6A": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "MosqueApiDeployment507D0882bb254bc663cabc45c9f1ad65a36766db"
+    },
+    "RestApiId": {
+     "Ref": "MosqueApi38EAD784"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "MosqueApiAccountB92643A2"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/DeploymentStage.prod/Resource"
+   }
+  },
+  "MosqueApiproxyA334B841": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "MosqueApi38EAD784",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "{proxy+}",
+    "RestApiId": {
+     "Ref": "MosqueApi38EAD784"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/Default/{proxy+}/Resource"
+   }
+  },
+  "MosqueApiproxyANYApiPermissionMosqueInfraStackMosqueApiA0C5C27CANYproxyFD1F2E77": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiLambda91D2282D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-north-1:590184117261:",
+       {
+        "Ref": "MosqueApi38EAD784"
+       },
+       "/",
+       {
+        "Ref": "MosqueApiDeploymentStageprod24DEAC6A"
+       },
+       "/*/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/Default/{proxy+}/ANY/ApiPermission.MosqueInfraStackMosqueApiA0C5C27C.ANY..{proxy+}"
+   }
+  },
+  "MosqueApiproxyANYApiPermissionTestMosqueInfraStackMosqueApiA0C5C27CANYproxy23E6C200": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiLambda91D2282D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-north-1:590184117261:",
+       {
+        "Ref": "MosqueApi38EAD784"
+       },
+       "/test-invoke-stage/*/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/Default/{proxy+}/ANY/ApiPermission.Test.MosqueInfraStackMosqueApiA0C5C27C.ANY..{proxy+}"
+   }
+  },
+  "MosqueApiproxyANY6B5B8B58": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "ApiLambda91D2282D",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "MosqueApiproxyA334B841"
+    },
+    "RestApiId": {
+     "Ref": "MosqueApi38EAD784"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/Default/{proxy+}/ANY/Resource"
+   }
+  },
+  "MosqueApiANYApiPermissionMosqueInfraStackMosqueApiA0C5C27CANYF06A6344": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiLambda91D2282D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-north-1:590184117261:",
+       {
+        "Ref": "MosqueApi38EAD784"
+       },
+       "/",
+       {
+        "Ref": "MosqueApiDeploymentStageprod24DEAC6A"
+       },
+       "/*/"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/Default/ANY/ApiPermission.MosqueInfraStackMosqueApiA0C5C27C.ANY.."
+   }
+  },
+  "MosqueApiANYApiPermissionTestMosqueInfraStackMosqueApiA0C5C27CANYB8047F02": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiLambda91D2282D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-north-1:590184117261:",
+       {
+        "Ref": "MosqueApi38EAD784"
+       },
+       "/test-invoke-stage/*/"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/Default/ANY/ApiPermission.Test.MosqueInfraStackMosqueApiA0C5C27C.ANY.."
+   }
+  },
+  "MosqueApiANY55E992EF": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "ApiLambda91D2282D",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "MosqueApi38EAD784",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "MosqueApi38EAD784"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/MosqueApi/Default/ANY/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/01QyU7DMBD9Fu7OUNID5xTEiaUK3KOJPaROYjuKbUoU5d/xUgqnt8jveWZKKO92sLvBsy24GIpRtrC+O+QDC1azikWjMiKYH9iOxB4+dSIbG1G1AhttBPUWXhM8ec2dNJpJVLDWJgcSHs0o+RJlZhuz+watJWehihA0HDwfyB3Q0qUe1hC4tsYwzUpaG9TGcJIdOjrjAutzel6TddUk06d/tOLceO3YI02jWRQFGtx/KuzbpUkzCVHjZ05pjuNsvpdf51Kc+Qu5kxHRymzbrkmWNoptUnfxxZt3k3cbi9eC3t5+lXu4D2fvrZTFHIaTiqDO+AMAvM4+kwEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "MosqueInfraStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "MosqueApiEndpointFEEE9E42": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MosqueApi38EAD784"
+      },
+      ".execute-api.eu-north-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "MosqueApiDeploymentStageprod24DEAC6A"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "ApiUrl": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MosqueApi38EAD784"
+      },
+      ".execute-api.eu-north-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "MosqueApiDeploymentStageprod24DEAC6A"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "TableName": {
+   "Value": {
+    "Ref": "MosquesTableA920B505"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

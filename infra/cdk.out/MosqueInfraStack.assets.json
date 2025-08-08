@@ -1,0 +1,36 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "faf18a9e45efb02f4748836934bba1ce7d1ead764d710e8ac653d5810b4957e2": {
+      "displayName": "ApiLambda/Code",
+      "source": {
+        "path": "asset.faf18a9e45efb02f4748836934bba1ce7d1ead764d710e8ac653d5810b4957e2",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "590184117261-eu-north-1-bb53ea26": {
+          "bucketName": "cdk-hnb659fds-assets-590184117261-eu-north-1",
+          "objectKey": "faf18a9e45efb02f4748836934bba1ce7d1ead764d710e8ac653d5810b4957e2.zip",
+          "region": "eu-north-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::590184117261:role/cdk-hnb659fds-file-publishing-role-590184117261-eu-north-1"
+        }
+      }
+    },
+    "a63856815ea2bb0d33957c818f4f18a600a401b91539a292dae4d041544a2ce5": {
+      "displayName": "MosqueInfraStack Template",
+      "source": {
+        "path": "MosqueInfraStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "590184117261-eu-north-1-ac0e2da2": {
+          "bucketName": "cdk-hnb659fds-assets-590184117261-eu-north-1",
+          "objectKey": "a63856815ea2bb0d33957c818f4f18a600a401b91539a292dae4d041544a2ce5.json",
+          "region": "eu-north-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::590184117261:role/cdk-hnb659fds-file-publishing-role-590184117261-eu-north-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
