@@ -1,26 +1,9 @@
 import express, { Request, Response } from 'express';
 import { ScanCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
 import { docClient } from '../dynamoClient';
+import { Mosque } from '../models/mosque';
 
 const router = express.Router();
-
-interface PrayerTimes {
-  fajr: string;
-  dhuhr: string;
-  asr: string;
-  maghrib: string;
-  isha: string;
-}
-
-interface Mosque {
-  id: string;
-  name: string;
-  city: string;
-  country: string;
-  lat: number;
-  lng: number;
-  prayerTimes: PrayerTimes;
-}
 
 router.get('/', async (req: Request, res: Response) => {
   try {

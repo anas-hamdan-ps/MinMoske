@@ -26,4 +26,5 @@ export interface Mosque {
   lng: number;
   prayerTimes: PrayerTimes; // Current day prayer times
   yearlyPrayerTimes?: YearlyPrayerTimes; // Full year data
+  description?: string; // Optional description for special mosques
 }

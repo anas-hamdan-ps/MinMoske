@@ -106,7 +106,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-590184117261-eu-north-1",
-     "S3Key": "faf18a9e45efb02f4748836934bba1ce7d1ead764d710e8ac653d5810b4957e2.zip"
+     "S3Key": "4383ad856ae9f4420ac1510608600ab141f1068284ae36a1cc36661054461822.zip"
     },
     "Environment": {
      "Variables": {
@@ -132,7 +132,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "MosqueInfraStack/ApiLambda/Resource",
-    "aws:asset:path": "asset.faf18a9e45efb02f4748836934bba1ce7d1ead764d710e8ac653d5810b4957e2",
+    "aws:asset:path": "asset.4383ad856ae9f4420ac1510608600ab141f1068284ae36a1cc36661054461822",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
